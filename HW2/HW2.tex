@@ -42,7 +42,7 @@ Butter & 1 & 16 & 0 & 0 \\
    \end{cases}
 \]
 
-\[ i(t) = \log_2(c/o(t))\]
+\[ i(t) = 1 + \log_2(c/o(t))\]
 \[ \vec{d} = w(t,d) * i(t) \]
 \textbf{Calculating $f(t,d)$ ,$w(t,d)$, $\vec{d}$ for each of the terms given -}
 
@@ -118,7 +118,7 @@ $o(t) = 2$, $c = 4$, $i(t) = 1$
 \cline{2-4}
 Doc1 & 1 & 0 & 0 \\
 \cline{2-4}
-Doc2 & 16 & 4 & 4 \\
+Doc2 & 16 & 5 & 5 \\
 \cline{2-4}
 Doc3 & 0 & 0 & 0 \\
 \cline{2-4}
@@ -142,7 +142,7 @@ Carpenter & 4 & 0 & 6.32 & 0 \\
 \cline{2-5}
 Bread & 1.233 & 2.29 & 0 & 2.19 \\
 \cline{2-5}
-Butter & 0 & 4 & 0 & 0 \\
+Butter & 0 & 5 & 0 & 0 \\
 \cline{2-5}
 \end{tabular}
 
@@ -156,13 +156,13 @@ Butter & 0 & 4 & 0 & 0 \\
  & \multicolumn{1}{c}{Doc3}
  & \multicolumn{1}{c}{Doc4} \\
 \cline{2-5}
-Walrus & 0.707 & 0 & 0 & 0.707 \\
+Walrus & 0.1194 & 0 & 0 & 0.184 \\
 \cline{2-5}
-Carpenter & 0.535 & 0 & 0.85 & 0 \\
+Carpenter & 0.1106 & 0 & 1 & 0 \\
 \cline{2-5}
-Bread & 0.1066 & 0.198 & 0 & 0.189 \\
+Bread & 0.034 & 0.076 & 0 & 0.094 \\
 \cline{2-5}
-Butter & 0 & 1 & 0 & 0 \\
+Butter & 0 & 0.165 & 0 & 0 \\
 \cline{2-5}
 \end{tabular}
 
@@ -176,11 +176,11 @@ $\vec{q} = <1,0,0,0>$
  & \multicolumn{1}{c}{$sim(\vec{d},\vec{q})$}
  & \multicolumn{1}{c}{Rank} \\
 \cline{2-3}
-Doc1 & 0.707 & 1 \\
+Doc1 & 0.1194 & 1 \\
 \cline{2-3}
-Doc2 & 0.535 & 2 \\
+Doc2 & 0.1106 & 2 \\
 \cline{2-3}
-Doc3 & 0.1066 & 3 \\
+Doc3 & 0.034 & 3 \\
 \cline{2-3}
 Doc4 & 0 & 4 \\
 \cline{2-3}
@@ -194,13 +194,13 @@ $\vec{q}$ = <0.707,0.707,0,0>
  & \multicolumn{1}{c}{$sim(\vec{d},\vec{q})$}
  & \multicolumn{1}{c}{Rank} \\
 \cline{2-3}
-Doc1 & 0.499 & 2 \\
+Doc1 & 0.1626 & 2 \\
 \cline{2-3}
-Doc2 & 0.378 & 3 \\
+Doc2 & 0 & 4 \\
 \cline{2-3}
-Doc3 & 0.2153 & 4 \\
+Doc3 & 0.707 & 1 \\
 \cline{2-3}
-Doc4 & 0.707 & 1 \\
+Doc4 & 0.1300 & 3 \\
 \cline{2-3}
 \end{tabular}
 
@@ -212,24 +212,116 @@ $\vec{q}$ = <0.57,0,0.57,0.57>
  & \multicolumn{1}{c}{$sim(\vec{d},\vec{q})$}
  & \multicolumn{1}{c}{Rank} \\
 \cline{2-3}
-Doc1 & 0.806 & 1 \\
+Doc1 & 0.087 & 3 \\
 \cline{2-3}
-Doc2 & 0 & 4 \\
+Doc2 & 0.137 & 2 \\
 \cline{2-3}
-Doc3 & 0.2813 & 3 \\
+Doc3 & 0 & 4 \\
 \cline{2-3}
-Doc4 & 0.57 & 2 \\
+Doc4 & 0.158 & 1 \\
 \cline{2-3}
 \end{tabular}
 
 \section[B]{Problem 2}
 \subsection {Document Similarity}
-$sim(\vec{d_1},\vec{d_2})$ = (0.707*0 + 0.535*0 + 0.1066*0.198 + 0*1) = 0.0211 \\
-$sim(\vec{d_1},\vec{d_3})$ = (0.707*0 + 0.535*0.85 + 0.1066*0 + 0*0) = 0.45 \\
-$sim(\vec{d_1},\vec{d_4})$ = (0.707*0.707 + 0.535*0 + 0.1066*0.189 + 0*0) = 0.52 \\
+$sim(\vec{d_1},\vec{d_2})$ = (0.1194*0 + 0.1106*0 + 0.034*0.076 + 0*0.165) = 0.0025 \\
+$sim(\vec{d_1},\vec{d_3})$ = (0.1194*0 + 0.1106*1 + 0.034*0 + 0*0) = 0.1106 \\
+$sim(\vec{d_1},\vec{d_4})$ = (0.1194*0.184 + 0.1106*0 + 0.034*0.094 + 0*0) = 0.025 \\
 
 
 \section[C]{Problem 3}
+\subsection{\textbf{Invariance under irrelevant words}}
+This Property does not hold as the document vectors can be different for both 'd' and 'e' even when query vector is same. The similarity measure is given by the formulae - 
+\[ sim(\vec{d},\vec{q}) = \frac{\vec{d}\cdot\vec{q}}{\| d \| \| q \|}\]
+
+Here, the document vector may contain different weights to other words even the weight of the query term may be the same for both the documents.
+
+\underline{Example :}
+Let the query term be "search" for the following the term-document matrix. The term search has the same $f(t,d)$ for the documents D1 and D4 - 
+
+\begin{tabular}{ r|c|c|c|c| }
+\multicolumn{1}{r}{}
+ & \multicolumn{1}{c}{Doc1}
+ & \multicolumn{1}{c}{Doc2}
+ & \multicolumn{1}{c}{Doc3}
+ & \multicolumn{1}{c}{Doc4} \\
+\cline{2-5}
+search & 8 & 0 & 0 & 8 \\
+\cline{2-5}
+web & 16 & 0 & 16 & 0 \\
+\cline{2-5}
+engines & 32 & 32 & 32 & 32 \\
+\cline{2-5}
+class & 64 & 64 & 0 & 0 \\
+\cline{2-5}
+\end{tabular}
+
+After computing the $w(t,d)$ and $i(t)$ the normalized term-document matrix with tf-idf values is as follows - 
+
+\begin{tabular}{ r|c|c|c|c| }
+\multicolumn{1}{r}{}
+ & \multicolumn{1}{c}{Doc1}
+ & \multicolumn{1}{c}{Doc2}
+ & \multicolumn{1}{c}{Doc3}
+ & \multicolumn{1}{c}{Doc4} \\
+\cline{2-5}
+search & 0.4 & 0 & 0 & 0.8 \\
+\cline{2-5}
+web & 0.50 & 0 & 0.85 & 0 \\
+\cline{2-5}
+engines & 0.30 & 0.39 & 0.51 & 0.6 \\
+\cline{2-5}
+class & 0.70 & 0.92 & 0 & 0 \\
+\cline{2-5}
+\end{tabular}
+
+The query vector for the term "search" will be $\vec{q}$ = <1,0,0,0>. The similarity of $\vec{d_1}$ and $\vec{d_2}$ with ${\vec{q}}$ will be -
+$sim(\vec{d_1},\vec{q})$ = 0.4 and $sim(\vec{d_2},\vec{q})$ = 0.8
+
+Therefore, we can see that this property does not hold true. 
+
+\subsection{\textbf{Invariance under scaling}}
+
+This property holds good for the ranking algorithm in Problem 1. The inverse document frequency reduces the weight of the vector which occurs frequently in all the documents or the complete collection. Even though a higher weight is given to the dimensions of the more verbose document; they are penalized by a factor of $1 + \log(c/o(t))$ 
+
+\underline{Example:}
+Consider the followinf term-document matrix with the terms in $f(t,Doc1)$ = $2 * f(t,Doc3)$
+
+\begin{tabular}{ r|c|c|c|c| }
+\multicolumn{1}{r}{}
+ & \multicolumn{1}{c}{Doc1}
+ & \multicolumn{1}{c}{Doc2}
+ & \multicolumn{1}{c}{Doc3}
+ & \multicolumn{1}{c}{Doc4} \\
+\cline{2-5}
+search & 8 & 0 & 16 & 0 \\
+\cline{2-5}
+web & 16 & 0 & 32 & 0 \\
+\cline{2-5}
+engines & 32 & 8 & 64 & 2 \\
+\cline{2-5}
+class & 16 & 0 & 32 & 0 \\
+\cline{2-5}
+\end{tabular}
+
+After computing $w(t,d)$ adn $i(t)$ we have the following normalized tf-idf matrix -
+
+\begin{tabular}{ r|c|c|c|c| }
+\multicolumn{1}{r}{}
+ & \multicolumn{1}{c}{Doc1}
+ & \multicolumn{1}{c}{Doc2}
+ & \multicolumn{1}{c}{Doc3}
+ & \multicolumn{1}{c}{Doc4} \\
+\cline{2-5}
+search & 0.46 & 0 & 0.48 & 0 \\
+\cline{2-5}
+web & 0.57 & 0 & 0.57 & 0 \\
+\cline{2-5}
+engines & 0.34 & 1 & 0.34 & 1 \\
+\cline{2-5}
+class & 0.57 & 0 & 0.574 & 0 \\
+\cline{2-5}
+\end{tabular} 
 \section[D]{Problem 4}
 \subsection{ $N = 9$, $e = 0.3$, $f = 1 - e \Rightarrow f = 1 - 0.3 \Rightarrow f = 0.7$, $E = (e/N) \Rightarrow E = 0.033$}
 \[
@@ -384,7 +476,4 @@ p =
   216.6975
    48.5876
 \end{lstlisting}
-Processing the posting lists in the order of size is \textbf{NOT} optimal in a scenario where the intermediate posting list is either very small or infact zero. This might be the case when there are, for instance 4 posting lists namely A,B,C, and D with posting list sizes in the order of 10, 100, 1M, 10M. In this scenario, if $A \cap D = 0$. Here in this case the complexity will be $O(10 + 100 + 1M + 10M)$ however there would have been no necessity to traverse the list if this was implemented differntly.
-
-\subsection{The time given in MRS for the procedure INTERSECT(p1,p2) in figure 1.6 is x+y where x is the length of p1 and y is length of p2. If you use additionally a hash table in which the key is the pair < word, docID >, and you record with each word the length of its posting list, then this can be made significantly faster. How do you use the hash table, and how fast does the revised algorithm run?}
 \end{document}
