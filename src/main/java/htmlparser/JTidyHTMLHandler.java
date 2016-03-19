@@ -95,6 +95,26 @@ public class JTidyHTMLHandler {
     }
 
     /**
+     * Gets the body text of the HTML document.
+     *
+     * @rawDoc the DOM Element to extract body Node from
+     * @return the body text
+     */
+    protected String getLinks(Element rawDoc) {
+        if (rawDoc == null) {
+            return null;
+        }
+
+        String text = "";
+        NodeList children = rawDoc.getElementsByTagName("a");
+        if (children.getLength() > 0) {
+            text = getText(children.item(0));
+        }
+        System.out.println(text);
+        return text;
+    }
+    
+    /**
      * Extracts text from the DOM node.
      *
      * @param node a DOM node
@@ -115,6 +135,7 @@ public class JTidyHTMLHandler {
                     break;
             }
         }
+        System.out.println(sb.toString());
         return sb.toString();
     }
 
