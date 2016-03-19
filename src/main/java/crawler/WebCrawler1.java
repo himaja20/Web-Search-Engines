@@ -43,7 +43,7 @@ public class WebCrawler1 {
 
 	public WebCrawler1(String[] args){
 		startingUrl = args[0];
-		query = args[1];
+		query = args[1].toLowerCase();
 		docs = args[2];
 		maxPages = Integer.parseInt(args[3]);
 		debug = (args[4].equals("true")) ? true : false;
@@ -52,6 +52,8 @@ public class WebCrawler1 {
 	}
 
 	public void run(String[] args) throws IOException{
+		System.out.println("Crawling for " + maxPages+ " pages relevant to " + args[1] + " starting from " + startingUrl);
+		System.out.println("\n");
 		try{
 			URL url = new URL(startingUrl);
 			Link newLink = new Link(url,"");
@@ -65,8 +67,7 @@ public class WebCrawler1 {
 			Link newLink = urlQueue.poll();
 			URL newUrl = newLink.getURL();
 			if(debug){
-				System.out.println("\n");
-				System.out.println("Downloading :"+ newLink.getURL());
+				System.out.println("Downloading : "+ newLink.getURL() + " with score = " + newLink.getScore());
 			}
 			if (!robotSafe(newUrl)){
 				continue;
@@ -74,7 +75,7 @@ public class WebCrawler1 {
 			File dFile = downloadFile(newUrl);
 			if(dFile != null){
 				if(debug){
-					System.out.println("Received :"+ newUrl);
+					System.out.println("Received : "+ newUrl);
 				}
 				knownUrls.put(newUrl, newLink);
 				fetchAnchorLinks(dFile, newUrl);
@@ -142,30 +143,43 @@ public class WebCrawler1 {
 
 			URL childUrl = new URL(parentUrl,linkHref);
 			Link newLink = new Link(childUrl,anchorText);
-			int score = computeScore(file,link,query);
-
+			int score = computeScore(file,link,query,parentUrl);
+			if (knownUrls.size() == maxPages){
+				break;
+			}
 			if(!knownUrls.containsKey(childUrl)){
+				knownUrls.put(childUrl, newLink);
 				if(!urlQueue.contains(newLink)){
 					newLink.setScore(score);
 					urlQueue.add(newLink);
+					knownUrls.put(childUrl, newLink);
 					if(debug){
-						System.out.println("Adding to queue: " + newLink.getURL() + " with score " + newLink.getScore());
+						System.out.println("Adding to queue: " + newLink.getURL() + " with score = " + newLink.getScore());
 					}
-					else{
-						score += newLink.getScore();
-						newLink.setScore(score);
+				}
+			}
+			else{
+				Link retrievedLink = knownUrls.get(childUrl);
+				if(urlQueue.contains(retrievedLink)){
+					int newScore = score + retrievedLink.getScore();
+					retrievedLink.setScore(newScore);
+					//knownUrls.put(childUrl,retrievedLink);
+					if(debug){
+						System.out.println("Adding " + score + " to score of " + newLink.getURL());
 					}
 				}
 			}
 		}
+		System.out.println("\n");
 	}
 
-	public int computeScore(File file,Element link, String query) throws IOException{
+	public int computeScore(File file,Element link, String query, URL parentUrl) throws IOException{
 		if (query == null){
 			return 0;
 		}
 
-		String anchor = link.text();
+		//substring
+		String anchor = link.text().toLowerCase();
 		String[] queryTerms = query.split(" ");
 		int K = 0;
 		for (String q : queryTerms){
@@ -177,7 +191,8 @@ public class WebCrawler1 {
 			return (K * 50);
 		}
 
-		String url = link.attr("href");
+		//substring
+		String url = link.attr("href").toLowerCase();
 		K = 0;
 		for (String q : queryTerms){
 			if(url.contains(q)){
@@ -192,13 +207,14 @@ public class WebCrawler1 {
 		int V = 0;
 		List<String> neighborWords = new ArrayList<String>();
 
-		if (getPrevNeighbors(link.previousSibling()) != null){
-			System.out.println(getPrevNeighbors(link.previousSibling()).size());
-			neighborWords.addAll(getPrevNeighbors(link.previousSibling()));
+		List<String> words = getPrevNeighbors(link.previousSibling());
+		if (words != null){
+			neighborWords.addAll(words);
 		}
-		if (getNextNeighbors(link.nextSibling()) != null){
-			System.out.println(getNextNeighbors(link.nextSibling()).size());
-			neighborWords.addAll(getNextNeighbors(link.nextSibling()));
+
+		words = getNextNeighbors(link.nextSibling());
+		if (words != null){
+			neighborWords.addAll(words);
 		}
 
 		for(String q: queryTerms){
@@ -207,20 +223,26 @@ public class WebCrawler1 {
 			}
 		}
 
-		String inputLine = null;
-		String fileContents = null;
 		BufferedReader br = new BufferedReader(
 				new FileReader(file));
-		while ((inputLine = br.readLine()) != null) {
-			fileContents += inputLine;
+		Document doc = Jsoup.parse(file, "UTF-8", parentUrl.toString());
+		String rawText = doc.text();
+		String[] raw = rawText.split(" ");
+		List<String> rawTextList = new ArrayList<String>();
+		for (String s : raw){
+			if (!s.matches("^[a-zA-Z0-9]+$")){
+				s = s.replaceAll("[^\\p{Alpha}\\p{Digit}]+","");
+			}
+			rawTextList.add(s.toLowerCase());
 		}
 		for(String q: queryTerms){
-			if(fileContents.toLowerCase().contains(q)){
+
+			if(rawTextList.contains(q)){
 				V++;
 			}
 		}
 		br.close();
-		
+
 		int score = 4*U + Math.abs(V-U);
 		return score;
 
@@ -239,18 +261,25 @@ public class WebCrawler1 {
 		int count = 0;
 		while (count < 5){
 			data = getData(prevSib);
+			if (data == null){
+				break;
+			}
 			neighbors = data.split(" ");
 			for (int i = neighbors.length - 1 ; i >= 0; i--){
-				sb.append(neighbors[i]);
-				count++;
 				if (count == 5){
 					break;
 				}
-				sb.append(",");
+				String word = neighbors[i];
+				if(!word.matches("^[a-zA-Z0-9]+$")){
+					word = word.replaceAll("[^\\p{Alpha}\\p{Digit}]+","");
+				}
+				sb.append(word.toLowerCase());
+				count++;
+				sb.append(" ");
 			}
 			prevSib = prevSib.previousSibling();
 		}
-		for (String s : sb.toString().split(",")){
+		for (String s : sb.toString().split(" ")){
 			retList.add(s);
 		}
 		return retList;
@@ -268,23 +297,29 @@ public class WebCrawler1 {
 		int count = 0;
 		while (count < 5){
 			data = getData(nextSib);
+			if(data == null){
+				break;
+			}
 			neighbors = data.split(" ");
 			for (String s : neighbors){
-				sb.append(s);
-				count++;
 				if (count == 5){
 					break;
 				}
-				sb.append(",");
+				if(!s.matches("^[a-zA-Z0-9]+$")){
+					s = s.replaceAll("[^\\p{Alpha}\\p{Digit}]+","");
+				}
+				sb.append(s.toLowerCase());
+				count++;
+				sb.append(" ");
 			}
 			nextSib = nextSib.nextSibling();
 		}
-		for (String s : sb.toString().split(",")){
+		for (String s : sb.toString().split(" ")){
 			retList.add(s);
 		}
 		return retList;
 	}
-	
+
 	public String getData(Node node){
 		if (node == null){
 			return null;
@@ -292,7 +327,7 @@ public class WebCrawler1 {
 		if (node instanceof TextNode){
 			return ((TextNode)node).text();
 		}
-			return ((Element)node).text();
+		return ((Element)node).text();
 	}
 	public File downloadFile(URL url) throws IOException{
 		String inputLine;
@@ -308,6 +343,7 @@ public class WebCrawler1 {
 		}
 		FileWriter fw = new FileWriter(fileToSave.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
+		//StringBuilder sb = new StringBuilder();
 
 		try {
 			URLConnection uConn = url.openConnection();
@@ -321,8 +357,8 @@ public class WebCrawler1 {
 			return null;
 		}
 		finally{
-			bw.close();
 			br.close();
+			bw.close();
 		}
 		return fileToSave;
 	}

@@ -5,13 +5,16 @@ import java.net.URL;
 public class Link {
 	
 	private int score;
-	private URL url;
-	private String anchorText;
+	private final URL url;
+	private final String anchorText;
+	private final int id;
+	private static int counter = 0;
 	
 	Link(URL url, String anchorText){
 		score = 0;
 		this.url = url;
 		this.anchorText = anchorText;
+	  this.id = ++counter;
 	}
 		
 	public int getScore(){
@@ -26,12 +29,12 @@ public class Link {
 		return this.anchorText;
 	}
 	
+	
+	public int getId(){
+		return this.id;
+	}
 	public void setScore(int score){
 		this.score = score;
-	}
-	
-	public void setAnchorText(String anchorText){
-		this.anchorText = anchorText;
 	}
 
 	/* (non-Javadoc)
