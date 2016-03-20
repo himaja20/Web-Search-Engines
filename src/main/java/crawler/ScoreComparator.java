@@ -14,13 +14,13 @@ public class ScoreComparator implements Comparator<Link>{
 			return 1;
 		}
 
-		if(l1.getId() > l1.getId()){
-			return -1;
-		}
-		
-		if (l1.getId() < l2.getId()){
-			return 1;
-		}
+//		if(l1.getId() > l1.getId()){
+//			return -1;
+//		}
+//		
+//		if (l1.getId() < l2.getId()){
+//			return 1;
+//		}
 		return 0;
 	}
 }

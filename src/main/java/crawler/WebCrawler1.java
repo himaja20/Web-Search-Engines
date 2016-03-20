@@ -35,6 +35,7 @@ public class WebCrawler1 {
 	private final String DISALLOW = "Disallow:";
 	private HashMap<URL,Link> knownUrls;
 	private PriorityQueue<Link> urlQueue;
+	private HashMap<URL,Link> allLinks;
 
 	public static void main(String[] args) throws IOException {
 		WebCrawler1 wc = new WebCrawler1(args);
@@ -49,6 +50,8 @@ public class WebCrawler1 {
 		debug = (args[4].equals("true")) ? true : false;
 		knownUrls = new HashMap<URL,Link>();
 		urlQueue = new PriorityQueue<Link>(maxPages,new ScoreComparator());
+		allLinks = new HashMap<URL,Link>();
+		
 	}
 
 	public void run(String[] args) throws IOException{
@@ -57,13 +60,16 @@ public class WebCrawler1 {
 		try{
 			URL url = new URL(startingUrl);
 			Link newLink = new Link(url,"");
+			knownUrls.put(url, newLink);
 			urlQueue.add(newLink);
+			allLinks.put(url,newLink);
 		}
 		catch(MalformedURLException e){
 			System.out.println("Invalid starting URL " + args[0]);
 		}
 
 		while((!(urlQueue.size() == 0)) && (knownUrls.size() < maxPages)){
+			
 			Link newLink = urlQueue.poll();
 			URL newUrl = newLink.getURL();
 			if(debug){
@@ -77,7 +83,7 @@ public class WebCrawler1 {
 				if(debug){
 					System.out.println("Received : "+ newUrl);
 				}
-				knownUrls.put(newUrl, newLink);
+				//knownUrls.put(newUrl, newLink);
 				fetchAnchorLinks(dFile, newUrl);
 			}
 		}   
@@ -148,11 +154,10 @@ public class WebCrawler1 {
 				break;
 			}
 			if(!knownUrls.containsKey(childUrl)){
-				knownUrls.put(childUrl, newLink);
 				if(!urlQueue.contains(newLink)){
 					newLink.setScore(score);
 					urlQueue.add(newLink);
-					knownUrls.put(childUrl, newLink);
+					//allLinks.put(childUrl, newLink);
 					if(debug){
 						System.out.println("Adding to queue: " + newLink.getURL() + " with score = " + newLink.getScore());
 					}
@@ -165,7 +170,7 @@ public class WebCrawler1 {
 					retrievedLink.setScore(newScore);
 					//knownUrls.put(childUrl,retrievedLink);
 					if(debug){
-						System.out.println("Adding " + score + " to score of " + newLink.getURL());
+						System.out.println("Adding " + score + " to score of " + retrievedLink.getURL());
 					}
 				}
 			}
